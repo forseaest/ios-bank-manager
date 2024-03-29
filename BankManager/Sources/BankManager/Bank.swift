@@ -50,24 +50,6 @@ public struct Bank {
         print("입력 : ", terminator: "")
     }
 
-    func manageBanking() {
-        var bank = Bank()
-        let randomNumber = Int.random(in: 10...30)
-        
-        for _ in 0..<randomNumber {
-            bank.clients.enqueue(element: Client())
-        }
-        
-        while !bank.clients.isEmpty {
-            bank.manager.startTask()
-            bank.clients.dequeue()
-            Thread.sleep(forTimeInterval: 0.7)
-            bank.manager.endTask()
-        }
-        
-        bank.manager.finishTasks()
-    }
-
     func finishBanking() {
         print("프로그램을 종료합니다.")
     }
