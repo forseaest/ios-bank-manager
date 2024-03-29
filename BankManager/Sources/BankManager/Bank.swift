@@ -31,17 +31,15 @@ public struct Bank {
 
     func inputMenu() throws {
         let input = readLine()
-        
-        guard let safeInput = input else {
-            throw InputError.nilInput
-        }
-        
-        switch safeInput {
+      
+        switch input {
         case "1":
-            manageBanking()
+            manager.manageBanking()
             run()
         case "2":
             finishBanking()
+        case .none:
+            throw InputError.nilInput
         default:
             throw InputError.exceptionalInput
         }
