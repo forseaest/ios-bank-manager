@@ -1,15 +1,25 @@
+import Foundation
+
 public struct BankManager {
     private var taskCount: Int = 0
     private var businessHour: Double = 0
-    
-    public func startTask() {
-        print("\(taskCount + 1)번 고객 업무 시작")
+   
+    public init() {
     }
     
-    public mutating func endTask() {
-        print("\(taskCount + 1)번 고객 업무 완료")
+    public func startTask(clientNumber: Int, serviceType: String) {
+        print("\(clientNumber)번 고객 \(serviceType)업무 시작")
+    }
+    
+    public mutating func endTask(clientNumber: Int, serviceType: String) {
+        print("\(clientNumber)번 고객 \(serviceType)업무 완료")
         taskCount += 1
-        businessHour += 0.7
+        if serviceType == "예금" {
+            businessHour += 0.7
+        }
+        if serviceType == "대출" {
+            businessHour += 1.1
+        }
     }
     
     public func finishTasks() {
