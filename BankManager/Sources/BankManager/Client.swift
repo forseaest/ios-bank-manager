@@ -8,6 +8,11 @@
 import Foundation
 
 public struct Client {
-    public init() {
+    let clientNumber: Int
+    let serviceType: String
+    
+    public init(clientNumber: Int, serviceType: String) {
+        self.clientNumber = clientNumber
+        self.serviceType = serviceType
     }
 }
