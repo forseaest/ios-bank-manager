@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum ServiceType {
+public enum ServiceType: CaseIterable {
     case deposit
     case loan
     

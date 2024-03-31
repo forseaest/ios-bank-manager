@@ -33,16 +33,11 @@ public class BankManager {
     }
     
     private func generateClients() {
-        let randomNumber = Int.random(in: 10...30)
-        var randomServiceType: Int
-        for ticket in 1...randomNumber {
-            randomServiceType = Int.random(in: 1...2)
-            
-            if randomServiceType == 1 {
-                clients.enqueue(element: Client(clientNumber: ticket, serviceType: .deposit))
-            } else {
-                clients.enqueue(element: Client(clientNumber: ticket, serviceType: .loan))
+        for clientNumber in 1...Int.random(in: 10...30) {
+            guard let serviceType = ServiceType.allCases.randomElement() else {
+                continue
             }
+            clients.enqueue(element: Client(clientNumber: clientNumber, serviceType: serviceType))
         }
     }
     
