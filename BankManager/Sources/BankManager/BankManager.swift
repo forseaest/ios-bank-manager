@@ -8,16 +8,16 @@ public class BankManager {
     public init() {
     }
     
-    public func initRecord() {
+    private func initRecord() {
         taskCount = 0
         businessHour = 0
     }
     
-    public func startTask(clientNumber: Int, serviceType: ServiceType) {
+    private func startTask(clientNumber: Int, serviceType: ServiceType) {
         print("\(clientNumber)번 고객 \(serviceType.koreanName) 업무 시작")
     }
     
-    public func endTask(clientNumber: Int, serviceType: ServiceType) {
+    private func endTask(clientNumber: Int, serviceType: ServiceType) {
         print("\(clientNumber)번 고객 \(serviceType.koreanName) 업무 완료")
         taskCount += 1
         if serviceType == .deposit {
@@ -28,17 +28,13 @@ public class BankManager {
         }
     }
     
-    public func finishTasks() {
+    private func finishTasks() {
         print("업무가 마감되었습니다. 오늘 업무를 처리한 고객은 총 \(taskCount)명이며, 총 업무시간은 \(String(format: "%.2f", businessHour))초입니다.")
     }
     
-    func manageBanking() {
-        initRecord()
-        
-        let startBusinessTime = Date()
+    private func generateClients() {
         let randomNumber = Int.random(in: 10...30)
         var randomServiceType: Int
-        
         for ticket in 1...randomNumber {
             randomServiceType = Int.random(in: 1...2)
             
@@ -48,7 +44,13 @@ public class BankManager {
                 clients.enqueue(element: Client(clientNumber: ticket, serviceType: .loan))
             }
         }
+    }
+    
+    func manageBanking() {
+        initRecord()
+        generateClients()
         
+        let startBusinessTime = Date()
         let group = DispatchGroup()
         let loanSemaphore = DispatchSemaphore(value: 1)
         let depositSemaphore = DispatchSemaphore(value: 2)
