@@ -46,6 +46,7 @@ public class BankManager {
         generateClients()
         
         let startBusinessTime = Date()
+        
         let group = DispatchGroup()
         let loanSemaphore = DispatchSemaphore(value: 1)
         let depositSemaphore = DispatchSemaphore(value: 2)
@@ -58,28 +59,30 @@ public class BankManager {
             let currentService: DispatchWorkItem
             
             switch info.serviceType {
+            case .deposit:
+                currentService = performBankService(info: info, semaphore: depositSemaphore)
             case .loan:
-                currentService = DispatchWorkItem {
-                    loanSemaphore.wait()
-                    self.startTask(clientNumber: info.clientNumber, serviceType: info.serviceType)
-                    Thread.sleep(forTimeInterval: 1.1)
-                    self.endTask(clientNumber: info.clientNumber, serviceType: info.serviceType)
-                    loanSemaphore.signal()
-                }
-            default :
-                currentService = DispatchWorkItem {
-                    depositSemaphore.wait()
-                    self.startTask(clientNumber: info.clientNumber, serviceType: info.serviceType)
-                    Thread.sleep(forTimeInterval: 0.7)
-                    self.endTask(clientNumber: info.clientNumber, serviceType: info.serviceType)
-                    depositSemaphore.signal()
-                }
+                currentService = performBankService(info: info, semaphore: loanSemaphore)
             }
+            
             DispatchQueue.global().async(group: group, execute: currentService)
         }
+    
         group.wait()
         
         businessHour = Date().timeIntervalSince(startBusinessTime)
         self.finishTasks()
+    }
+    
+    func performBankService(info: Client, semaphore: DispatchSemaphore) -> DispatchWorkItem {
+        return DispatchWorkItem {
+            semaphore.wait()
+            
+            self.startTask(clientNumber: info.clientNumber, serviceType: info.serviceType)
+            Thread.sleep(forTimeInterval: info.serviceType.processTime)
+            self.endTask(clientNumber: info.clientNumber, serviceType: info.serviceType)
+            
+            semaphore.signal()
+        }
     }
 }
