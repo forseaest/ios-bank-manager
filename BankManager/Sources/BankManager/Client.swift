@@ -9,9 +9,9 @@ import Foundation
 
 public struct Client {
     let clientNumber: Int
-    let serviceType: String
+    let serviceType: ServiceType
     
-    public init(clientNumber: Int, serviceType: String) {
+    public init(clientNumber: Int, serviceType: ServiceType) {
         self.clientNumber = clientNumber
         self.serviceType = serviceType
     }

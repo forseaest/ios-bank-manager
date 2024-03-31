@@ -7,11 +7,11 @@
 
 import Foundation
 
-enum ServiceType {
+public enum ServiceType {
     case deposit
     case loan
     
-    var name: String {
+    var koreanName: String {
         switch self {
         case .deposit :
             return "예금"

@@ -3,21 +3,21 @@ import Foundation
 public struct BankManager {
     private var taskCount: Int = 0
     private var businessHour: Double = 0
-   
+    
     public init() {
     }
     
-    public func startTask(clientNumber: Int, serviceType: String) {
-        print("\(clientNumber)번 고객 \(serviceType)업무 시작")
+    public func startTask(clientNumber: Int, serviceType: ServiceType) {
+        print("\(clientNumber)번 고객 \(serviceType.koreanName) 업무 시작")
     }
     
-    public mutating func endTask(clientNumber: Int, serviceType: String) {
-        print("\(clientNumber)번 고객 \(serviceType)업무 완료")
+    public mutating func endTask(clientNumber: Int, serviceType: ServiceType) {
+        print("\(clientNumber)번 고객 \(serviceType.koreanName) 업무 완료")
         taskCount += 1
-        if serviceType == "예금" {
+        if serviceType == .deposit {
             businessHour += 0.7
         }
-        if serviceType == "대출" {
+        if serviceType == .loan {
             businessHour += 1.1
         }
     }
@@ -35,9 +35,9 @@ public struct BankManager {
             randomServiceType = Int.random(in: 1...2)
             
             if randomServiceType == 1 {
-                bank.clients.enqueue(element: Client(clientNumber: ticket, serviceType: "예금"))
+                bank.clients.enqueue(element: Client(clientNumber: ticket, serviceType: .deposit))
             } else {
-                bank.clients.enqueue(element: Client(clientNumber: ticket, serviceType: "대출"))
+                bank.clients.enqueue(element: Client(clientNumber: ticket, serviceType: .loan))
             }
         }
         
@@ -53,12 +53,12 @@ public struct BankManager {
             let currentService: DispatchWorkItem
             
             switch info.serviceType {
-            case "대출":
+            case .loan:
                 currentService = DispatchWorkItem {
                     loanSemaphore.wait()
-                    bank.manager.startTask(clientNumber: info.clientNumber , serviceType: info.serviceType)
+                    bank.manager.startTask(clientNumber: info.clientNumber, serviceType: info.serviceType)
                     Thread.sleep(forTimeInterval: 1.1)
-                    bank.manager.endTask(clientNumber: info.clientNumber , serviceType: info.serviceType)
+                    bank.manager.endTask(clientNumber: info.clientNumber, serviceType: info.serviceType)
                     loanSemaphore.signal()
                 }
             default :
@@ -66,7 +66,7 @@ public struct BankManager {
                     depositSemaphore.wait()
                     bank.manager.startTask(clientNumber: info.clientNumber, serviceType: info.serviceType)
                     Thread.sleep(forTimeInterval: 0.7)
-                    bank.manager.endTask(clientNumber: info.clientNumber , serviceType: info.serviceType)
+                    bank.manager.endTask(clientNumber: info.clientNumber, serviceType: info.serviceType)
                     depositSemaphore.signal()
                 }
             }
