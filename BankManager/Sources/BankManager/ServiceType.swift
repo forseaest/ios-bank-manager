@@ -2,7 +2,7 @@
 //  File.swift
 //  
 //
-//  Created by JIWOONG on 2024/03/29.
+//  Created by Gray, Gama on 2024/03/29.
 //
 
 import Foundation
@@ -13,10 +13,19 @@ public enum ServiceType: CaseIterable {
     
     var koreanName: String {
         switch self {
-        case .deposit :
+        case .deposit:
             return "예금"
-        case .loan :
+        case .loan:
             return "대출"
+        }
+    }
+    
+    var processTime: Double {
+        switch self {
+        case .deposit:
+            return 0.7
+        case .loan:
+            return 1.1
         }
     }
 }
