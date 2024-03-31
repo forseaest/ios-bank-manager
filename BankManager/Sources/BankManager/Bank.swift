@@ -9,13 +9,11 @@ import Foundation
 
 public struct Bank {
     public var manager = BankManager()
-    public var clients = BankQueue<Client>()
     
     public init() {
-        
     }
     
-    public func run() {
+    public mutating func run() {
         printMenu()
         
         do {
@@ -29,7 +27,7 @@ public struct Bank {
         }
     }
 
-    func inputMenu() throws {
+    mutating func inputMenu() throws {
         let input = readLine()
       
         switch input {

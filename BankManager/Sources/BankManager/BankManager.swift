@@ -1,8 +1,9 @@
 import Foundation
 
-public struct BankManager {
+public class BankManager {
     private var taskCount: Int = 0
     private var businessHour: Double = 0
+    public var clients = BankQueue<Client>()
     
     public init() {
     }
@@ -11,7 +12,7 @@ public struct BankManager {
         print("\(clientNumber)번 고객 \(serviceType.koreanName) 업무 시작")
     }
     
-    public mutating func endTask(clientNumber: Int, serviceType: ServiceType) {
+    public func endTask(clientNumber: Int, serviceType: ServiceType) {
         print("\(clientNumber)번 고객 \(serviceType.koreanName) 업무 완료")
         taskCount += 1
         if serviceType == .deposit {
@@ -27,7 +28,6 @@ public struct BankManager {
     }
     
     func manageBanking() {
-        var bank = Bank()
         let randomNumber = Int.random(in: 10...30)
         var randomServiceType: Int
         
@@ -35,9 +35,9 @@ public struct BankManager {
             randomServiceType = Int.random(in: 1...2)
             
             if randomServiceType == 1 {
-                bank.clients.enqueue(element: Client(clientNumber: ticket, serviceType: .deposit))
+                clients.enqueue(element: Client(clientNumber: ticket, serviceType: .deposit))
             } else {
-                bank.clients.enqueue(element: Client(clientNumber: ticket, serviceType: .loan))
+                clients.enqueue(element: Client(clientNumber: ticket, serviceType: .loan))
             }
         }
         
@@ -45,8 +45,8 @@ public struct BankManager {
         let loanSemaphore = DispatchSemaphore(value: 1)
         let depositSemaphore = DispatchSemaphore(value: 2)
         
-        while !bank.clients.isEmpty {
-            guard let info = bank.clients.dequeue() else {
+        while !clients.isEmpty {
+            guard let info = clients.dequeue() else {
                 return
             }
             
@@ -56,23 +56,23 @@ public struct BankManager {
             case .loan:
                 currentService = DispatchWorkItem {
                     loanSemaphore.wait()
-                    bank.manager.startTask(clientNumber: info.clientNumber, serviceType: info.serviceType)
+                    self.startTask(clientNumber: info.clientNumber, serviceType: info.serviceType)
                     Thread.sleep(forTimeInterval: 1.1)
-                    bank.manager.endTask(clientNumber: info.clientNumber, serviceType: info.serviceType)
+                    self.endTask(clientNumber: info.clientNumber, serviceType: info.serviceType)
                     loanSemaphore.signal()
                 }
             default :
                 currentService = DispatchWorkItem {
                     depositSemaphore.wait()
-                    bank.manager.startTask(clientNumber: info.clientNumber, serviceType: info.serviceType)
+                    self.startTask(clientNumber: info.clientNumber, serviceType: info.serviceType)
                     Thread.sleep(forTimeInterval: 0.7)
-                    bank.manager.endTask(clientNumber: info.clientNumber, serviceType: info.serviceType)
+                    self.endTask(clientNumber: info.clientNumber, serviceType: info.serviceType)
                     depositSemaphore.signal()
                 }
             }
             DispatchQueue.global().async(group: group, execute: currentService)
         }
         group.wait()
-        bank.manager.finishTasks()
+        self.finishTasks()
     }
 }

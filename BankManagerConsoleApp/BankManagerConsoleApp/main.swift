@@ -7,5 +7,5 @@
 import Foundation
 import BankManager
 
-let bank = Bank()
+var bank = Bank()
 bank.run()
