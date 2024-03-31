@@ -2,10 +2,15 @@ import Foundation
 
 public class BankManager {
     private var taskCount: Int = 0
-    private var businessHour: Double = 0
+    private var businessHour: TimeInterval = 0
     public var clients = BankQueue<Client>()
     
     public init() {
+    }
+    
+    public func initRecord() {
+        taskCount = 0
+        businessHour = 0
     }
     
     public func startTask(clientNumber: Int, serviceType: ServiceType) {
@@ -24,10 +29,13 @@ public class BankManager {
     }
     
     public func finishTasks() {
-        print("업무가 마감되었습니다. 오늘 업무를 처리한 고객은 총 \(taskCount)명이며, 총 업무시간은 \(String(format: "%.1f", businessHour))초입니다.")
+        print("업무가 마감되었습니다. 오늘 업무를 처리한 고객은 총 \(taskCount)명이며, 총 업무시간은 \(String(format: "%.2f", businessHour))초입니다.")
     }
     
     func manageBanking() {
+        initRecord()
+        
+        let startBusinessTime = Date()
         let randomNumber = Int.random(in: 10...30)
         var randomServiceType: Int
         
@@ -73,6 +81,8 @@ public class BankManager {
             DispatchQueue.global().async(group: group, execute: currentService)
         }
         group.wait()
+        
+        businessHour = Date().timeIntervalSince(startBusinessTime)
         self.finishTasks()
     }
 }
